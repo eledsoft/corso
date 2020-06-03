@@ -1,23 +1,12 @@
-import React, {Component} from "react";
+import React from "react";
+import PropTypes from 'prop-types';
 
-class UserItem extends Component {
-    constructor() {
-        super();
-        this.state = {
-            id: 'id',
-            login: 'mojombo',
-            avatar_url: 'https://avatars0.githubusercontent.com/u/1?v=4',
-            html_url: 'https://github.com/mojombo'
-        };
-    }
+const UserItem  = ({user:{avatar_url, login, html_url}}) => {
 
-
-    render() {
-        const {avatar_url, login, html_url} = this.props.user;
         return (
             <div className='card text-center'>
                 <img
-                    src={avatar_url}
+                     src={avatar_url}
                     alt=''
                     className=''
                     style={{width: '60px'}}
@@ -28,7 +17,11 @@ class UserItem extends Component {
                 </div>
             </div>
         )
-    }
+
+}
+
+UserItem.propTypes = {
+    user: PropTypes.object.isRequired,
 }
 
 export default UserItem;
