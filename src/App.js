@@ -2,15 +2,18 @@ import React, {Fragment} from 'react';
 import './App.css';
 import NavBar from './components/layout/NavBar';
 import Users from "./components/users/Users";
+import User from "./components/users/User";
 import Search from "./components/users/Search";
 import Alert from "./components/layout/Alert";
 import axios from "axios";
 import {BrowserRouter as Router, Switch, Route} from "react-router-dom";
+import About from "./components/pages/About";
 
 
 class App extends React.Component {
     state = {
         users: [],
+        user: {},
         loading: false,
         alert: null
     }
@@ -31,6 +34,16 @@ class App extends React.Component {
         console.log(res.data.items);
     }
 
+    //get single user
+    getUser = async (username) => {
+        //console.log(text);
+        this.setState({loading: true});
+        const res = await axios.get(`https://api.github.com/users/${username}&client_id=${process.env.REACT_APP_GITHUB_CLIENT_ID}&client_secret=${process.env.REACT_APP_GITHUB_CLIENT_SECRET}`);
+
+        this.setState({user: res.data, loading: false});
+        console.log(res.data.items);
+    }
+
     //clear users from state
     clearUsers = () => this.setState({users: [], loading: false});
 
@@ -42,16 +55,19 @@ class App extends React.Component {
 
 
     render() {
-        const {users, loading} = this.state;
+        const {users, user, loading} = this.state;
 
         return (
             <Router>
-            < div className='App'>
+            <div className='App'>
                 <NavBar title='Github Finder' icon='fab fa-github'/>
                 <div className='container'>
                     <Alert alert={this.state.alert}/>
-                    <switch>
-                        <Route excat path='/' render={props => (
+                    <Switch>
+                        <Route
+                            exact
+                            path='/'
+                            render={props => (
                             <Fragment>
                                 <Search
                                     searchUsers={this.searchUsers}
@@ -62,8 +78,12 @@ class App extends React.Component {
                                 <Users loading={loading} users={users}/>
                             </Fragment>
                         )}/>
-
-                    </switch>
+                    <Route exact path='/about' component={About} />
+                    <Route exact path='/user/:login' render={props => (
+                        <User {...props} getUser={this.getUser()} user={user} />
+                    )
+                    } />
+                    </Switch>
 
 
                 </div>
