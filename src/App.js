@@ -8,20 +8,21 @@ import Alert from "./components/layout/Alert";
 import axios from "axios";
 import {BrowserRouter as Router, Switch, Route} from "react-router-dom";
 import About from "./components/pages/About";
+import GithubState from "./components/context/github/GithubState";
 
 
 const App = () => {
-    const[users, setUsers] = useState([]);
-    const[user, setUser] = useState({});
-    const[repos, setRepos] = useState([]);
-    const[loading, setLoading] = useState(false);
-    const[alert, setAlert] = useState([]);
+    const [users, setUsers] = useState([]);
+    const [user, setUser] = useState({});
+    const [repos, setRepos] = useState([]);
+    const [loading, setLoading] = useState(false);
+    const [alert, setAlert] = useState([]);
 
     const searchUsers = async text => {
         setLoading(true);
         const res = await axios.get(`https://api.github.com/search/users?q=${text}&client_id=${process.env.REACT_APP_GITHUB_CLIENT_ID}&client_secret=${process.env.REACT_APP_GITHUB_CLIENT_SECRET}`);
         setUsers(res.data.items);
-          setLoading(false);
+        setLoading(false);
     }
 
     //get single user
@@ -55,48 +56,48 @@ const App = () => {
     };
 
 
-
-
-        return (
+    return (
+        <GithubState>
             <Router>
-            <div className='App'>
-                <NavBar title='Github Finder' icon='fab fa-github'/>
-                <div className='container'>
-                    <Alert alert={alert}/>
-                    <Switch>
-                        <Route
-                            exact
-                            path='/'
-                            render={props => (
-                            <Fragment>
-                                <Search
-                                    searchUsers={searchUsers}
-                                    clearUsers={clearUsers}
-                                    showClear={users.length > 0 ? true : false}
-                                    setAlert={setAlert1}
-                                />
-                                <Users loading={loading} users={users}/>
-                            </Fragment>
-                        )}/>
-                    <Route exact path='/about' component={About} />
-                    <Route exact path='/user/:login' render={props => (
-                        <User
-                            {...props}
-                            getUser={getUser}
-                            getUserRepos={getUserRepos}
-                            user={user}
-                            repos={repos}
-                            loading={loading}/>
-                    )
-                    } />
-                    </Switch>
+                <div className='App'>
+                    <NavBar title='Github Finder' icon='fab fa-github'/>
+                    <div className='container'>
+                        <Alert alert={alert}/>
+                        <Switch>
+                            <Route
+                                exact
+                                path='/'
+                                render={props => (
+                                    <Fragment>
+                                        <Search
+                                            searchUsers={searchUsers}
+                                            clearUsers={clearUsers}
+                                            showClear={users.length > 0 ? true : false}
+                                            setAlert={setAlert1}
+                                        />
+                                        <Users loading={loading} users={users}/>
+                                    </Fragment>
+                                )}/>
+                            <Route exact path='/about' component={About}/>
+                            <Route exact path='/user/:login' render={props => (
+                                <User
+                                    {...props}
+                                    getUser={getUser}
+                                    getUserRepos={getUserRepos}
+                                    user={user}
+                                    repos={repos}
+                                    loading={loading}/>
+                            )
+                            }/>
+                        </Switch>
 
+
+                    </div>
 
                 </div>
-
-            </div>
             </Router>
-        );
+        </GithubState>
+    );
     //}
 }
 
